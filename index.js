@@ -15,6 +15,10 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
+app.get('/', (req, res) => {
+  res.send('¡API de MovieApp funcionando!');
+});
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/comentarios', require('./routes/comentarios'));
 app.use('/api/peliculas', require('./routes/peliculas'));
