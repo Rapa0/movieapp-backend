@@ -3,8 +3,8 @@ const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const auth = require('../middleware/auth');
 const Comentario = require('../models/comentario.js');
-const Usuario = require('../models/Usuario.js');
-const Pelicula = require('../models/Pelicula.js');
+const Usuario = require('../models/usuario.js');
+const Pelicula = require('../models/pelicula.js');
 
 router.get('/:peliculaId', async (req, res) => {
   try {

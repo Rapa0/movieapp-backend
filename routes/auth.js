@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const sgMail = require('@sendgrid/mail');
-const Usuario = require('../models/usuario');
+const Usuario = require('/../models/usuario');
 const router = express.Router();
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
