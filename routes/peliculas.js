@@ -10,6 +10,7 @@ const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 router.get('/:id', async (req, res) => {
   const { id } = req.params; 
   try {
+    
     const tmdbResponse = await axios.get(`${TMDB_BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}&language=es-ES`);
     const data = tmdbResponse.data;
 
@@ -28,6 +29,7 @@ router.get('/:id', async (req, res) => {
     }
     
     res.json(data);
+
   } catch (error) {
     console.error('Error fetching movie details from TMDB or saving movie:', error.message);
     res.status(500).send('Error en el servidor');
