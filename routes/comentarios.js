@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const auth = require('../middleware/auth');
-const Comentario = require('../models/Comentario');
-const Usuario = require('../models/Usuario');
-const Pelicula = require('../models/Pelicula');
+const Comentario = require('../models/Comentario.js');
+const Usuario = require('../models/Usuario.js');
+const Pelicula = require('../models/Pelicula.js');
 
 router.get('/:peliculaId', async (req, res) => {
   try {
