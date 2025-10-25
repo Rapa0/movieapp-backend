@@ -16,10 +16,14 @@ router.post('/registro', async (req, res) => {
             return res.status(400).json({ msg: 'El email o el nombre de usuario ya están en uso.' });
         }
         const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
         tempVerification[email] = {
             nombre,
             email,
-            password: password, 
+            password: hashedPassword, 
             codigo,
             timestamp: Date.now()
         };
@@ -50,17 +54,15 @@ router.post('/verificar', async (req, res) => {
             delete tempVerification[email];
             return res.status(400).json({ msg: 'El código de verificación ha expirado.' });
         }
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(tempUser.password, salt);
         
         const usuario = new Usuario({
             nombre: tempUser.nombre,
             email: tempUser.email,
-            password: hashedPassword
+            password: tempUser.password 
         });
         await usuario.save(); 
         delete tempVerification[email];
-        const payload = { usuario: { id: usuario.id, rol: usuario.rol } };
+        const payload = { usuario: { id: usuario.id, rol: usuario.rol } }; 
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (error, token) => {
             if (error) throw error;
             res.status(201).json({ token });
@@ -82,7 +84,7 @@ router.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ msg: 'Credenciales inválidas' });
         }
-        const payload = { usuario: { id: usuario.id, rol: usuario.rol } };
+        const payload = { usuario: { id: usuario.id, rol: usuario.rol } }; 
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (error, token) => {
             if (error) throw error;
             res.json({ token });
@@ -151,9 +153,11 @@ router.post('/reset-password', async (req, res) => {
             delete tempVerification[email];
             return res.status(400).json({ msg: 'Usuario no encontrado.' });
         }
+        
         const salt = await bcrypt.genSalt(10);
         usuario.password = await bcrypt.hash(password, salt);
         await usuario.save(); 
+        
         delete tempVerification[email];
         res.json({ msg: 'Contraseña actualizada correctamente.' });
     } catch (error) {
