@@ -109,7 +109,7 @@ router.put(
 router.delete('/:id', auth, async (req, res) => {
   try {
     let comentario = await Comentario.findById(req.params.id);
-    if (!comentario) return res.status(404).json({ msg: 'Comentario no encontrado' });
+    if (!comentario) return res.status(44).json({ msg: 'Comentario no encontrado' });
 
     const usuario = await Usuario.findById(req.usuario.id);
     if (!usuario) return res.status(404).json({ msg: 'Usuario no encontrado' });
