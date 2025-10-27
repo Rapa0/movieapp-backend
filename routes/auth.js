@@ -17,13 +17,10 @@ router.post('/registro', async (req, res) => {
         }
         const codigo = Math.floor(100000 + Math.random() * 900000).toString();
         
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
         tempVerification[email] = {
             nombre,
             email,
-            password: hashedPassword, 
+            password: password, 
             codigo,
             timestamp: Date.now()
         };
@@ -54,15 +51,18 @@ router.post('/verificar', async (req, res) => {
             delete tempVerification[email];
             return res.status(400).json({ msg: 'El código de verificación ha expirado.' });
         }
-        
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(tempUser.password, salt);
+
         const usuario = new Usuario({
             nombre: tempUser.nombre,
             email: tempUser.email,
-            password: tempUser.password 
+            password: hashedPassword
         });
         await usuario.save(); 
         delete tempVerification[email];
-        const payload = { usuario: { id: usuario.id, rol: usuario.rol } }; 
+        const payload = { usuario: { id: usuario.id, rol: usuario.rol } };
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (error, token) => {
             if (error) throw error;
             res.status(201).json({ token });
@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ msg: 'Credenciales inválidas' });
         }
-        const payload = { usuario: { id: usuario.id, rol: usuario.rol } }; 
+        const payload = { usuario: { id: usuario.id, rol: usuario.rol } };
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (error, token) => {
             if (error) throw error;
             res.json({ token });
