@@ -14,25 +14,25 @@ router.post('/registro', async (req, res) => {
         const userExists = await Usuario.findOne({ $or: [{ email }, { nombre }] });
         if (userExists) {
             return res.status(400).json({ msg: 'El email o el nombre de usuario ya están en uso.' });
-        }
+}
         const codigo = Math.floor(100000 + Math.random() * 900000).toString();
-        
+
         tempVerification[email] = {
-            nombre,
-            email,
-            password: password, 
-            codigo,
-            timestamp: Date.now()
-        };
-        const msg = {
-            to: email,
-            from: process.env.VERIFIED_EMAIL,
-            subject: 'Código de Verificación - MovieApp',
-            text: `Tu código de verificación para MovieApp es: ${codigo}`,
-            html: `<strong>Tu código de verificación para MovieApp es: ${codigo}</strong>`,
-        };
-        await sgMail.send(msg);
-        res.status(200).json({ msg: 'Código de verificación enviado al correo.' });
+         nombre,
+         email,
+         password: password, 
+         codigo,
+         timestamp: Date.now()
+         };
+         const msg = {
+         to: email,
+          from: process.env.VERIFIED_EMAIL,
+          subject: 'Código de Verificación - MovieApp',
+         text: `Tu código de verificación para MovieApp es: ${codigo}`,
+         html: `<strong>Tu código de verificación para MovieApp es: ${codigo}</strong>`,
+         };
+         await sgMail.send(msg);
+         res.status(200).json({ msg: 'Código de verificación enviado al correo.' });
     } catch (error) {
         console.error("Error en el registro:", error);
         res.status(500).send('Error en el servidor al procesar el registro.');
@@ -40,8 +40,8 @@ router.post('/registro', async (req, res) => {
 });
 
 router.post('/verificar', async (req, res) => {
-    const { email, codigo } = req.body;
-    try {
+     const { email, codigo } = req.body;
+     try {
         const tempUser = tempVerification[email];
         if (!tempUser || tempUser.codigo !== codigo) {
             return res.status(400).json({ msg: 'El código de verificación es incorrecto.' });
@@ -51,16 +51,12 @@ router.post('/verificar', async (req, res) => {
             delete tempVerification[email];
             return res.status(400).json({ msg: 'El código de verificación ha expirado.' });
         }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(tempUser.password, salt);
-
-        const usuario = new Usuario({
+             const usuario = new Usuario({
             nombre: tempUser.nombre,
             email: tempUser.email,
-            password: hashedPassword
+            password: tempUser.password
         });
-        await usuario.save(); 
+             await usuario.save(); 
         delete tempVerification[email];
         const payload = { usuario: { id: usuario.id, rol: usuario.rol } };
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (error, token) => {
@@ -120,20 +116,21 @@ router.post('/forgot-password', async (req, res) => {
 
 router.post('/verify-reset-code', async (req, res) => {
     const { email, codigo } = req.body;
-    try {
+     try {
         const tempUser = tempVerification[email];
         if (!tempUser || tempUser.codigo !== codigo) {
             return res.status(400).json({ msg: 'El código de verificación es incorrecto.' });
         }
         const diezMinutos = 10 * 60 * 1000;
         if (Date.now() - tempUser.timestamp > diezMinutos) {
-            delete tempVerification[email];
-            return res.status(400).json({ msg: 'El código de verificación ha expirado.' });
-        }
-        res.json({ msg: 'Código válido.' });
+source: 'ts',
+         delete tempVerification[email];
+         return res.status(400).json({ msg: 'El código de verificación ha expirado.' });
+}
+         res.json({ msg: 'Código válido.' });
     } catch (error) {
         res.status(500).send('Error en el servidor');
-    }
+}
 });
 
 router.post('/reset-password', async (req, res) => {
@@ -142,28 +139,27 @@ router.post('/reset-password', async (req, res) => {
         const tempUser = tempVerification[email];
         if (!tempUser || tempUser.codigo !== codigo) {
             return res.status(400).json({ msg: 'El código de verificación es incorrecto o inválido.' });
-        }
-        const diezMinutos = 10 * 60 * 1000;
-        if (Date.now() - tempUser.timestamp > diezMinutos) {
+         }
+         const diezMinutos = 10 * 60 * 1000;
+         if (Date.now() - tempUser.timestamp > diezMinutos) {
             delete tempVerification[email];
-            return res.status(400).json({ msg: 'El código de verificación ha expirado.' });
-        }
-        const usuario = await Usuario.findById(tempUser.userId);
-        if (!usuario) {
+        return res.status(400).json({ msg: 'El código de verificación ha expirado.' });
+}
+         const usuario = await Usuario.findById(tempUser.userId);
+         if (!usuario) {
             delete tempVerification[email];
-            return res.status(400).json({ msg: 'Usuario no encontrado.' });
-        }
-        
-        const salt = await bcrypt.genSalt(10);
-        usuario.password = await bcrypt.hash(password, salt);
+        return res.status(400).json({ msg: 'Usuario no encontrado.' });
+}
+
+        usuario.password = password;
         await usuario.save(); 
-        
+
         delete tempVerification[email];
         res.json({ msg: 'Contraseña actualizada correctamente.' });
     } catch (error) {
         console.error("Error en reset-password:", error);
-        res.status(500).json({ msg: 'Error interno del servidor al actualizar la contraseña.' });
-    }
+         res.status(500).json({ msg: 'Error interno del servidor al actualizar la contraseña.' });
+}
 });
 
 module.exports = router;
