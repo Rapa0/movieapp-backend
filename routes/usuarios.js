@@ -45,13 +45,13 @@ router.post('/solicitar-critico', auth, async (req, res) => {
     }
 
     usuario.solicitudCritico = {
-      motivacion,
-      redesSociales: redesSocialiales,
+      motivacion: motivacion,
+      redesSociales: redesSocialiales || '',
       estado: 'pendiente',
       fecha: new Date()
     };
 
-    console.log('Intentando guardar solicitud para:', usuario.nombre);
+    console.log('Intentando guardar solicitud para:', usuario.nombre, 'con datos:', usuario.solicitudCritico);
     await usuario.save();
     console.log('Solicitud guardada exitosamente para:', usuario.nombre);
 
