@@ -7,7 +7,7 @@ const Usuario = require('../models/usuario.js');
 const Pelicula = require('../models/pelicula.js');
 const mongoose = require('mongoose');
 
-router.post('/local-scores', auth, async (req, res) => {
+router.post('/local-scores', async (req, res) => {
     const { movieIds } = req.body;
 
     if (!Array.isArray(movieIds) || movieIds.length === 0) {
