@@ -7,18 +7,23 @@ const usuarioSchema = new mongoose.Schema({
     password: { type: String, required: true },
     rol: {
         type: String,
-        enum: ['usuario', 'critico', 'admin'], 
+        enum: ['usuario', 'critico', 'admin'],
         default: 'usuario'
     },
     estado: {
         type: String,
-        enum: ['activo', 'pendiente_critico'], 
+        enum: ['activo', 'pendiente_verificacion'], 
         default: 'activo'
     },
-    solicitudCritico: { 
+    solicitudCritico: {
         motivo: { type: String },
-        enlaces: { type: String },
-        fecha: { type: Date }
+        redesSociales: { type: String }, 
+        estado: {                     
+            type: String,
+            enum: ['pendiente', 'aprobado', 'rechazado'],
+            default: null 
+        },
+        fecha: { type: Date }        
     }
 });
 
