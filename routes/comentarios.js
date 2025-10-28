@@ -32,7 +32,7 @@ router.post('/local-scores', auth, async (req, res) => {
                     averageScore: { $avg: '$puntuacion' }
                 }
             },
-
+            
             { 
                 $group: {
                     _id: '$_id.peliculaId',
@@ -54,7 +54,7 @@ router.post('/local-scores', auth, async (req, res) => {
             
             const rawUserScore = userScoreObj ? userScoreObj.score : 0;
             const rawCriticScore = criticScoreObj ? criticScoreObj.score : 0;
-
+            
             const userScore = rawUserScore > 0 ? parseFloat(rawUserScore.toFixed(1)) : null;
             const criticScore = rawCriticScore > 0 ? parseFloat(rawCriticScore.toFixed(1)) : null;
 
@@ -71,9 +71,10 @@ router.post('/local-scores', auth, async (req, res) => {
 
     } catch (error) {
         console.error('Error al obtener scores locales:', error.message);
-        res.status(500).send('Error en el servidor al calcular puntuaciones.'); 
+        return res.status(500).send('Error en el servidor al calcular puntuaciones.');
     }
 });
+
 
 router.get('/:peliculaId', async (req, res) => {
     try {
