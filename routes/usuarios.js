@@ -29,11 +29,11 @@ router.post('/solicitar-critico', auth, async (req, res) => {
       return res.status(400).json({ msg: 'Ya has enviado una solicitud' });
     }
 
-    const { motivacion, redesSociales } = req.body;
+    const { motivacion, redesSocialiales } = req.body;
     
     usuario.solicitudCritico = {
       motivacion,
-      redesSociales,
+      redesSociales: redesSocialiales,
       estado: 'pendiente'
     };
     
