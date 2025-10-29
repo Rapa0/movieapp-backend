@@ -94,6 +94,12 @@ router.put('/aprobar-critico/:id', auth, async (req, res) => {
     usuario.solicitudCritico.estado = 'aprobado';
     await usuario.save();
 
+    
+    await Comentario.updateMany(
+      { autor: usuario._id },
+      { $set: { autorRol: 'critico' } }
+    );
+
     res.json({ msg: 'Usuario aprobado como crítico' });
 
   } catch (error) {
@@ -110,13 +116,21 @@ router.put('/rechazar-critico/:id', auth, async (req, res) => {
     }
 
     const usuario = await Usuario.findById(req.params.id);
-    if (!usuario || !usuario.solicitudCritico || usuario.solicitudCritico.estado !== 'pendiente') {
-      return res.status(404).json({ msg: 'Solicitud no encontrada o ya procesada' });
+    if (!usuario || !usuario.solicitudCritico) {
+      return res.status(404).json({ msg: 'Solicitud no encontrada' });
     }
-
+    
+    
+    usuario.rol = 'usuario';
     usuario.solicitudCritico.estado = 'rechazado';
     await usuario.save();
 
+    
+    await Comentario.updateMany(
+      { autor: usuario._id },
+      { $set: { autorRol: 'usuario' } }
+    );
+    
     res.json({ msg: 'Solicitud de crítico rechazada' });
 
   } catch (error) {
