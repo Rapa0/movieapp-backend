@@ -37,15 +37,15 @@ router.post('/solicitar-critico', auth, async (req, res) => {
       return res.status(400).json({ msg: 'Ya has enviado una solicitud' });
     }
 
-    const { motivacion, redesSocialiales } = req.body;
+    const { motivo, redesSocialiales } = req.body;
 
-    if (!motivacion || motivacion.length < 20) {
+    if (!motivo || motivo.length < 20) {
        console.error('ERROR: Motivación inválida recibida.');
        return res.status(400).json({ msg: 'La motivación es requerida y debe tener al menos 20 caracteres.'});
     }
 
     usuario.solicitudCritico = {
-      motivacion: motivacion,
+      motivo: motivo,
       redesSociales: redesSocialiales || '',
       estado: 'pendiente',
       fecha: new Date()
